@@ -31,4 +31,4 @@ The output is a dataframe (written to a csv file) with, for each DOI, the follow
     I'm sure there is a more elegant solution! 
 
 ##The script
-[DOI_queries_OADOI_API.R](https://github.com/bmkramer/scihub_netherlands/blob/OADOI_API_R/DOI_queries_OADOI_API.R)
+[DOI_queries_OADOI_API.R](https://github.com/bmkramer/OADOI_API_R/blob/master/DOI_queries_OADOI_API.R)
