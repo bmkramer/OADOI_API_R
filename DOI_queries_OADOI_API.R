@@ -23,17 +23,37 @@
 #skipping the offending DOI by resetting the loop counter in line 74.
 
 #install packages
-install.packages("rjson")
+# install.packages("rjson")  # recommended package is jsonlite (ropensci guys are really great)
 install.packages("httpcache")
-require(rjson)
-require(httpcache)
+#library(rjson)
+library(jsonlite)
+library(httpcache)
 #import csv with DOIs; csv should contain list of doi's in column labeled "DOI"
-DOI_input <- read.csv(file="xxx.csv", header=TRUE, sep=",")
+#DOI_input <- read.csv(file="xxx.csv", header=TRUE, sep=",")
+DOI_input <- read.csv("tests/doi_examples.csv")
+# because i f*cked up the file
+names(DOI_input) <- c( "DOI", NA)
+DOI_input[,2] <- NULL
 
-#create empty dataframe with 8 columns
-df <- data.frame(matrix(nrow = 1, ncol = 8))
-#set column names of dataframe
-colnames(df) = c("DOI", "DOI_resolver", "evidence", "free_fulltext_URL", "is_subscription_journal", "license", "oa_color", "url")
+# factoring out the substitute part
+doi_fixing <- function(x){
+    x <- gsub("DOI", "", x) # remove DOI
+    x <- gsub(":", "",x)  # remove :
+    x <- gsub(" {1,}", "", x) # remove whitespace
+    x
+}
+
+validate_doi <- function(df, DOI_columnname){
+    if(class(df[,DOI_columnname])=="numeric")stop("The DOI column needs to be character or factor")
+    if(class(df[,DOI_columnname])!="character") df[,DOI_columnname]<- as.character(df[,DOI_columnname])
+    # if someone copied DOI part as well as the numbers (like I did)
+    # this removes that.
+    df[,DOI_columnname]<- doi_fixing(df[,DOI_columnname])
+    df
+}
+
+DOI_input <- validate_doi(DOI_input, "DOI")
+
 
 naIfNull <- function(cell){
   if(is.null(cell)) {
@@ -71,9 +91,46 @@ getData <- function(doi){
 #use counter approach to be able to test/run on subsets of data, and to manually jump any rows giving a 404 error
 #when jumping rows by changing counter, rerun the script from line 38. This way, results are added to the same dataframe 
 #reset counter range to fit number of rows in source file
-for (i in 1:100){
-  df <- rbind(df,getData(DOI_input$DOI[i]))
+get_data <- function(doi){
+    url <- paste("https://api.oadoi.org/",doi,sep="")
+    data <- fromJSON(url)
+    #data <- flatten(data)
+    data
 }
+
+# for large amounts of data, we could use the curl package and do a pool
+# of requests and download all the information simultaniously. That is for
+# later. 
+
+download_all_doi_info <- function(doi_vector){
+    stopifnot(is.vector(doi_vector)) # fail as early as possible.
+    vec_length <- length(doi_vector)  # again, fail as early as possible
+    if(vec_length==0)stop("doi_vector is empty")
+    #create empty dataframe with 8 columns and correct number or rows
+    df <- data.frame(matrix(nrow = vec_length, ncol = 8))
+    #set column names of dataframe
+    colnames(df) = c("DOI", "DOI_resolver", "evidence", "free_fulltext_URL", 
+                     "is_subscription_journal", "license", "oa_color", "url")
+    # then we loop through every doi
+    # retrieve the json, translate to an r object, and
+    # put the right parts in the right places.
+    for (i in 1:vec_length){
+        data <- get_data(doi_vector[[i]])
+        df$DOI[i] <- data$results$doi
+        df$DOI_resolver[i] <- data$results$doi_resolver
+        df$evidence[i] <- data$results$evidence
+        df$free_fulltext_URL[i] <- data$results$free_fulltext_url
+        df$is_subscription_journal[i] <- data$results$is_subscription_journal
+        df$license[i] <- data$results$license
+        df$oa_color[i] <- data$results$oa_color
+        df$url[i] <- data$results$url
+    }    
+    #return df
+    df
+    
+}
+
+
 
 #alternatively, to try out the script, block lines 74-76, 
 #and run the script with lines 80-82 instead, using 3 example DOIs with different outputs. 
