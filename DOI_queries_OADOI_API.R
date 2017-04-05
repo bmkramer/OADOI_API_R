@@ -130,7 +130,7 @@ download_all_doi_info <- function(doi_vector){
     
 }
 
-
+df <- download_all_doi_info(DOI_input$DOI)
 
 #alternatively, to try out the script, block lines 74-76, 
 #and run the script with lines 80-82 instead, using 3 example DOIs with different outputs. 
