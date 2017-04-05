@@ -1,7 +1,7 @@
-#this script uses the OADOI API to get information on online availability (gold and green Open Access) 
-#of academic articles, identified by their DOI, as well as publisher policies on archiving. 
-#OADOI API information: https://oadoi.org/api
-#OAIDOI documentation: https://oadoi.org/about
+# This set of functions uses the OADOI API to get information on online availability (gold and green Open Access) 
+# of academic articles, identified by their DOI, as well as publisher policies on archiving. 
+# OADOI API information: https://oadoi.org/api
+# OAIDOI documentation: https://oadoi.org/about
 
 #input and output
 #this script uses as input a csv file with a list of doi's in a column labeled "DOI"
@@ -24,16 +24,8 @@
 
 #install packages
 # install.packages("rjson")  # recommended package is jsonlite (ropensci guys are really great)
-install.packages("httpcache")
-#library(rjson)
-library(jsonlite)
-library(httpcache)
-#import csv with DOIs; csv should contain list of doi's in column labeled "DOI"
-#DOI_input <- read.csv(file="xxx.csv", header=TRUE, sep=",")
-DOI_input <- read.csv("tests/doi_examples.csv")
-# because i f*cked up the file
-names(DOI_input) <- c( "DOI", NA)
-DOI_input[,2] <- NULL
+
+
 
 # factoring out the substitute part
 doi_fixing <- function(x){
@@ -52,7 +44,7 @@ validate_doi <- function(df, DOI_columnname){
     df
 }
 
-DOI_input <- validate_doi(DOI_input, "DOI")
+
 
 
 naIfNull <- function(cell){
@@ -138,4 +130,4 @@ df <- download_all_doi_info(DOI_input$DOI)
 #df <- rbind(df,getData("10.1001/archderm.1986.01660130056025"))
 #df <- rbind(df,getData("10.1002/0471140856.tx2306s57"))
 
-write.csv(df, file="OADOI_API_results.csv", row.names=FALSE)
+
