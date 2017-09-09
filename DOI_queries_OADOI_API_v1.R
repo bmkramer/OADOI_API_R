@@ -43,17 +43,17 @@ naIfNull <- function(cell){
   }
 }
 
-#define function to get data from Dissemin API and construct vector with relevant variables;
+#define function to get data from OADOI API and construct vector with relevant variables;
 #this vector will become a row in the final dataframe to be produced;
 #define doi.character as character for doi to be included as such in the vector;
-#employ naIfNull function because not all values are always present in Dissemin API output.
+#employ naIfNull function because not all values are always present in OADOI API output.
 getData <- function(doi){
   doi_character <- as.character(doi)
-  url <- paste("https://api.oadoi.org/",doi,sep="")
+  #enter your email address in the line below (replace your@email.com), this helps OADOI contact you if something is wrong
+  url <- paste("https://api.oadoi.org/",doi,"?email=your@email.com",sep="")
   raw_data <- GET(url)
   rd <- httr::content(raw_data)
   first_result <- rd$results[[1]]
-  #first_record <- paper$records[[1]]
   result <- c(
     doi_character,
     naIfNull(first_result$doi_resolver),
