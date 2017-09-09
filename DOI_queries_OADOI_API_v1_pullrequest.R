@@ -31,7 +31,7 @@ library(httpcache)
 #import csv with DOIs; csv should contain list of doi's in column labeled "DOI"
 #DOI_input <- read.csv(file="xxx.csv", header=TRUE, sep=",")
 DOI_input <- read.csv("tests/doi_examples.csv")
-# because i f*cked up the file
+# because i f*cked up the file!
 names(DOI_input) <- c( "DOI", NA)
 DOI_input[,2] <- NULL
 
