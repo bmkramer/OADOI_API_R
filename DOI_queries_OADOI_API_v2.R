@@ -36,7 +36,7 @@
 require(rjson)
 require(httpcache)
 #import csv with DOIs; csv should contain list of doi's in column labeled "DOI"
-DOI_input <- read.csv(file="DOI_test_20.csv", header=TRUE, sep=",")
+DOI_input <- read.csv(file="xxx.csv", header=TRUE, sep=",")
 
 #create empty dataframe with 12 columns
 df <- data.frame(matrix(nrow = 1, ncol = 12))
@@ -94,4 +94,4 @@ for (i in 1:10){
 #df <- rbind(df,getData("10.1001/archderm.1986.01660130056025"))
 #df <- rbind(df,getData("10.1002/0471140856.tx2306s57"))
 
-write.csv(df, file="results_OADOI_v2_DOI_test.csv", row.names=FALSE)
+write.csv(df, file="OADOI_API_v2_results.csv", row.names=FALSE)
