@@ -2,6 +2,8 @@
 
 Based on a similar attempt for [querying the Dissemin API](https://github.com/bmkramer/Dissemin_API_R) 
 
+The script has now been updated to work with OADOI API v2.
+
 ## Description
 This script uses the OADOI API to get information on online availability (gold and green Open Access) of academic articles, identified by their DOI, as well as publisher policies on archiving. 
 
