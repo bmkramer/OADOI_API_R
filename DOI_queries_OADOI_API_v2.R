@@ -1,5 +1,5 @@
-#this script uses the OADOI API to get information on online availability (gold and green Open Access) 
-#of academic articles, identified by their DOI, as well as publisher policies on archiving. 
+#this script uses the OADOI API to get information on online availability 
+#(gold, hybrid, bronze and green Open Access) of academic articles, identified by their DOI. 
 #OADOI API information: https://oadoi.org/api and https://oadoi.org/api/v2
 #OAIDOI documentation: https://oadoi.org/about
 
@@ -23,10 +23,7 @@
 
 #caveats / issues
 #1) the script uses loops (bad R!), if someone can improve this using an apply-function, you're most welcome! 
-#2) the script currently stops executing when it encounters a HTTP status 404 for one of the DOIs checked.
-#this could probably be circumvented with try.catch(), but I don't know how (yet);
-#in the current setup, the script can be manually rerun from line 38, 
-#skipping the offending DOI by resetting the loop counter in line 85.
+#2) the script escapes errors using try.catch() when it encounters a HTTP status 404 for one of the DOIs checked.
 
 #install packages
 #install.packages("rjson")
@@ -35,6 +32,8 @@ require(rjson)
 require(httpcache)
 #import csv with DOIs; csv should contain list of doi's in column labeled "DOI"
 DOI_input <- read.csv(file="xxx.csv", header=TRUE, sep=",")
+#row count, declare to variable
+DOI_inputCount <- nrow(DOI_input)
 
 #create empty dataframe with 12 columns
 df <- data.frame(matrix(nrow = 1, ncol = 12))
@@ -79,15 +78,15 @@ getData <- function(doi){
 }
 
 
-#fill dataframe df (from 2nd row onwards) with API results for each DOI from original dataset
-#use counter approach to be able to test/run on subsets of data, and to manually jump any rows giving a 404 error
-#reset counter range to fit number of rows in source file
-for (i in 1:100){
+#excape errors to jump any rows giving a 404 in API call
+for (i in 1:DOI_inputCount){
+  tryCatch({
   df <- rbind(df,getData(DOI_input$DOI[i]))
+  }, error=function(e){})
 }
 
-#alternatively, to try out the script, block lines 85-87, 
-#and run the script with lines 91-93 instead, using 3 example DOIs with different outputs. 
+#alternatively, to try out the script, block the loop above
+#and run the script with the 3 lines below, using 3 example DOIs. 
 #df <- rbind(df,getData("10.1016/j.paid.2009.02.013"))
 #df <- rbind(df,getData("10.1001/archderm.1986.01660130056025"))
 #df <- rbind(df,getData("10.1002/0471140856.tx2306s57"))
